@@ -18,10 +18,14 @@
           <p><strong>Namespace:</strong> {{ pod.Namespace }}</p>
           <p><strong>Category:</strong> {{ pod.Category }}</p>
           <p><strong>Owner Name:</strong> {{ pod.OwnerName }}</p>
+          <p><strong>CPU Usage Percent:</strong> {{ formatUsage(pod.cpuUsagePercent) }}</p>
+          <p><strong>Memory Usage Percent:</strong> {{ formatUsage(pod.memoryUsagePercent) }}</p>
           <p :class="{'unhealthy-field': isCPUUsageMaxUnhealthy(pod)}"><strong>CPU Usage Percent (Max):</strong> {{ formatUsage(pod.cpuUsagePercentMax) }}</p>
           <p :class="{'unhealthy-field': isCPUUsageMinUnhealthy(pod)}"><strong>CPU Usage Percent (Min):</strong> {{ formatUsage(pod.cpuUsagePercentMin) }}</p>
+          <p :class="{'unhealthy-field': isCPUUsageAvgUnhealthy(pod)}"><strong>CPU Usage Percent (Avg):</strong> {{ formatUsage(pod.cpuUsagePercentAvg) }}</p>
           <p :class="{'unhealthy-field': isMemoryUsageMaxUnhealthy(pod)}"><strong>Memory Usage Percent (Max):</strong> {{ formatUsage(pod.memoryUsagePercentMax) }}</p>
           <p :class="{'unhealthy-field': isMemoryUsageMinUnhealthy(pod)}"><strong>Memory Usage Percent (Min):</strong> {{ formatUsage(pod.memoryUsagePercentMin) }}</p>
+          <p :class="{'unhealthy-field': isMemoryUsageAvgUnhealthy(pod)}"><strong>Memory Usage Percent (Avg):</strong> {{ formatUsage(pod.memoryUsagePercentAvg) }}</p> 
           <p :class="{'unhealthy-field': isRestartCountUnhealthy(pod)}"><strong>Restart Count:</strong> {{ pod.RestartCount }}</p>
           <p><strong>CPU Usage (Max):</strong> {{ pod.CPUUsageMax }}</p>
           <p><strong>CPU Usage (Min):</strong> {{ pod.CPUUsageMin }}</p>
@@ -33,14 +37,6 @@
           <p><strong>CPU Limit:</strong> {{ pod.CPULimit }}</p>
           <p><strong>Memory Request:</strong> {{ pod.MemoryRequest }}</p>
           <p><strong>Memory Limit:</strong> {{ pod.MemoryLimit }}</p>
-          <p><strong>CPU Usage Percent:</strong> {{ formatUsage(pod.cpuUsagePercent) }}</p>
-          <p><strong>Memory Usage Percent:</strong> {{ formatUsage(pod.memoryUsagePercent) }}</p>
-          <p><strong>CPU Usage Percent (Max):</strong> {{ formatUsage(pod.cpuUsagePercentMax) }}</p>
-          <p><strong>CPU Usage Percent (Min):</strong> {{ formatUsage(pod.cpuUsagePercentMin) }}</p>
-          <p><strong>CPU Usage Percent (Avg):</strong> {{ formatUsage(pod.cpuUsagePercentAvg) }}</p>
-          <p><strong>Memory Usage Percent (Max):</strong> {{ formatUsage(pod.memoryUsagePercentMax) }}</p>
-          <p><strong>Memory Usage Percent (Min):</strong> {{ formatUsage(pod.memoryUsagePercentMin) }}</p>
-          <p><strong>Memory Usage Percent (Avg):</strong> {{ formatUsage(pod.memoryUsagePercentAvg) }}</p>
           <p><strong>Cluster:</strong> {{ cluster }}</p>
         </div>
         <h2>Container Statuses</h2>
@@ -186,6 +182,14 @@ export default {
       return pod.MemoryLimit !== 'No Limit' && pod.memoryUsagePercentMin === 0
     }
 
+    const isCPUUsageAvgUnhealthy = (pod) => {
+      return pod.CPULimit !== 'No Limit' && pod.cpuUsagePercentAvg === 0
+    }
+
+    const isMemoryUsageAvgUnhealthy = (pod) => {
+      return pod.MemoryLimit !== 'No Limit' && pod.MemoryUsagePercentAvg === 0 
+    }
+
     const isRestartCountUnhealthy = (pod) => {
       return pod.RestartCount > 3
     }
@@ -220,6 +224,8 @@ export default {
         isMemoryUsageMaxUnhealthy(pod) ||
         isCPUUsageMinUnhealthy(pod) ||
         isMemoryUsageMinUnhealthy(pod) ||
+        isCPUUsageAvgUnhealthy(pod) ||
+        isMemoryUsageAvgUnhealthy(pod) ||
         isRestartCountUnhealthy(pod) ||
         isContainerCPUUsageMaxUnhealthy(pod) ||
         isContainerMemoryUsageMaxUnhealthy(pod) ||
@@ -270,6 +276,8 @@ export default {
       isMemoryUsageMaxUnhealthy,
       isCPUUsageMinUnhealthy,
       isMemoryUsageMinUnhealthy,
+      isCPUUsageAvgUnhealthy,
+      isMemoryUsageAvgUnhealthy,
       isRestartCountUnhealthy,
       isContainerCPUUsageMaxUnhealthy,
       isContainerMemoryUsageMaxUnhealthy,
